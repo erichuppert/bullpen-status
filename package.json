@@ -1,6 +1,6 @@
 {
   "name": "bullpen-status",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A simple app to track the status of MLB bullpens",
   "author": "Eric Huppert <eric@erichuppert.com>",
   "script": {
