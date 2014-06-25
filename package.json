@@ -1,13 +1,8 @@
 {
   "name": "bullpen-status",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A simple app to track the status of MLB bullpens",
   "author": "Eric Huppert <eric@erichuppert.com>",
-  "script": {
-    "start": "node server.js",
-    "predeploy": "echo im about to deploy",
-    "postdeploy": "echo ive deployed"
-  },
   "keywords": [
   "mlb",
   "bullpen"
