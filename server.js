@@ -16,7 +16,7 @@ var teamCodes = [
 var Server = mongo.Server,
     Db = mongo.Db;
 
-var server = new Server('localhost', 27017, {auto_reconnect: true});
+var server = new Server('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', 27017, {auto_reconnect: true});
 db = new Db('bullpen-status', server, {safe: true});
 
 db.open(function(err, db) {
