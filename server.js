@@ -1,7 +1,7 @@
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
-var mongo = require('mongodb');
+var MongoClient = require('mongodb').MongoClient;
 var app = express();
 var teamCodes = [
 	'oak', 'ana', 'sea', 'tex', 'hou',
@@ -12,14 +12,7 @@ var teamCodes = [
 	'atl', 'mia', 'was', 'nym', 'phi' 
 ];
 
-// Connect to the db
-var Server = mongo.Server,
-    Db = mongo.Db;
-
-var server = new Server('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', 27017, {auto_reconnect: true});
-db = new Db('bullpen-status', server, {safe: true});
-
-db.open(function(err, db) {
+MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
 	// listen on port 3000 or env port
 	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get('port'));
@@ -39,7 +32,13 @@ db.open(function(err, db) {
 		if (teamCodes.indexOf(teamCode) < 0 ) {
 			res.send(404);
 		}
-		res.send(currentStatus[teamCode]);
+		getTeamData(teamCode, function(err, data) {
+			if (err) {
+				res.send(500);
+			} else {
+				res.json(data);
+			}
+		})
 	})
 
 
@@ -47,7 +46,7 @@ db.open(function(err, db) {
     	if (teamCodes.indexOf(teamCode) >= 0) {
 			var resData = {team: teamCode, pitchers: []}
 			db.collection('currentBullpen').findOne({team: teamCode}, function(err, data) {
-				if (!err) {
+				if (!err && data) {
 					var pitchers = data.pitchers;
 					for (var i=0; i < pitchers.length; i++) {
 						var pitcher = pitchers[i];
@@ -201,14 +200,6 @@ db.open(function(err, db) {
 				})
 			}
 		})
-		for (var i = 0; i < teamCodes.length; i++) {
-			var teamCode = teamCodes[i];
-			getTeamData(teamCode, function(err, data) {
-				if (!err) {
-					currentStatus[data.team] = data;
-				}
-			})
-		}
 		console.log('finished updating');
 	}
 
