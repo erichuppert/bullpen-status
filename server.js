@@ -23,7 +23,7 @@ db.open(function(err, db) {
 	// listen on port 3000 or env port
 	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get('port'));
-	console.log('Listening on port ' + app.get(‘port’));
+	console.log('Listening on port ' + app.get('port'));
 
     if(!err) {
         console.log("Connected to 'bullpen-status' database");
