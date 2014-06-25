@@ -21,7 +21,7 @@ db = new Db('bullpen-status', server, {safe: true});
 
 db.open(function(err, db) {
 	// listen on port 3000 or env port
-	app.set(‘port’, process.env.PORT || 8081);
+	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get(‘port’));
 	console.log('Listening on port ' + app.get(‘port’));
 
