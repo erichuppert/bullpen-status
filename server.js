@@ -12,8 +12,8 @@ var teamCodes = [
 	'atl', 'mia', 'was', 'nym', 'phi' 
 ];
 
-MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
-// MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
+// MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
 	// listen on port 3000 or env port
 	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get('port'));
@@ -45,7 +45,7 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 
     function getTeamData(teamCode, callback) {
     	if (teamCodes.indexOf(teamCode) >= 0) {
-			var resData = {team: teamCode, pitchers: []}
+			var resData = {team: teamCode, pitchers: [], startDate: isoDate(startDate), endDate: isoDate(new Date())}
 			db.collection('currentBullpen').findOne({team: teamCode}, function(err, data) {
 				if (!err && data) {
 					var pitchers = data.pitchers;
