@@ -13,6 +13,7 @@ var teamCodes = [
 ];
 
 MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
+// MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
 	// listen on port 3000 or env port
 	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get('port'));
@@ -86,14 +87,23 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 		});
 	}
 
-	function getPitchCount(id, date, callback) {
-		db.collection('pitchCounts').find({id: id, date: {$gte: date}}).toArray(function(err, data) {
+	function getPitchCount(id, dateSince, callback) {
+		db.collection('pitchCounts').find({id: id, date: {$gte: dateSince}}).toArray(function(err, data) {
 			data = data.map(function(a) {
 				return {date: isoDate(a.date), np: a.np};
 			})
+			var dateRange = getDates(dateSince, new Date());
+			var pitchesByDay = dateRange.map(function(a) {
+				var pitchCountDate = data.filter(function(b) { return b.date === isoDate(a)});
+				if (pitchCountDate.length > 0) {
+					return pitchCountDate[0];
+				} else {
+					return {date: isoDate(a), np: null}
+				}
+			})
 			if (!err) {
 				if (data != null) {
-					callback(data);
+					callback(pitchesByDay);
 				} else {
 					callback([]);
 				}
