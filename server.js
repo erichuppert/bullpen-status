@@ -12,8 +12,8 @@ var teamCodes = [
 	'atl', 'mia', 'was', 'nym', 'phi' 
 ];
 
-// MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
-MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
+MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
+// MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
 	// listen on port 3000 or env port
 	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get('port'));
