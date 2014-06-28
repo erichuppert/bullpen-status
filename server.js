@@ -12,8 +12,8 @@ var teamCodes = [
 	'atl', 'mia', 'was', 'nym', 'phi' 
 ];
 
-MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
-// MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
+// MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
 	// listen on port 3000 or env port
 	app.set('port', process.env.PORT || 3000);
 	app.listen(app.get('port'));
@@ -24,9 +24,15 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
     }
 
 	// ping test
-	app.get('/ping', function(req, res){
+	app.get('/', function(req, res){
 		res.json({message: 'Success!'})
 	});
+
+	app.get('/games', function(req, res){
+		getGameIndex(today, function(date, data){
+			res.json(data);
+		})
+	})
 
 	app.get('/:teamCode', function(req, res) {
 		var teamCode = req.params.teamCode;
@@ -123,6 +129,27 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 		})
 	}
 
+	function getGameIndex(date, callback) {
+		var url = "http://gd2.mlb.com/components/game/mlb/year_" + date.getFullYear() 
+			+ "/month_" + dateLeadingZero(date.getMonth() + 1) + "/day_" + dateLeadingZero(date.getDate()) + "/miniscoreboard.json";
+		request(url, function(error, response, body) {
+			scoreboard = JSON.parse(body);
+			games = scoreboard.data.games.game.map(function(game) {
+				return {
+					home_team: game.home_team_city,
+					away_team: game.away_team_city,
+					away_team_code: game.away_file_code,
+					home_team_code: game.home_file_code,
+					home_score: game.home_team_runs,
+					away_score: game.away_team_runs,
+					status: game.ind,
+					inning: game.inning,
+					game_time: game.time_date
+				}
+			})
+			callback(date, games);
+		});	
+	}
 
 	// returns a number that is two digits (adds leading "0" to single digit numbers)
 	function dateLeadingZero(num) {
