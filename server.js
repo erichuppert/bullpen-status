@@ -165,11 +165,13 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 			+ "/month_" + dateLeadingZero(date.getMonth() + 1) + "/day_" + dateLeadingZero(date.getDate()) + "/miniscoreboard.json";
 		request(url, function(error, response, body) {
 			scoreboard = JSON.parse(body);
-			var gameURLS;
-			if (scoreboard.data.games.game.length === 1){
-				gameURLS = ["http://gd2.mlb.com" + scoreboard.data.games.game.game_data_directory + "/boxscore.json" })];
-			} else {
-				gameURLS = scoreboard.data.games.game.map(function(game){ return "http://gd2.mlb.com" + game.game_data_directory + "/boxscore.json" })
+			var gameURLS = [];
+			if (scoreboard.data.games.game) {
+				if (scoreboard.data.games.game.length === 1){
+					gameURLS = ["http://gd2.mlb.com" + scoreboard.data.games.game.game_data_directory + "/boxscore.json" ];
+				} else {
+					gameURLS = scoreboard.data.games.game.map(function(game){ return "http://gd2.mlb.com" + game.game_data_directory + "/boxscore.json" })
+				}
 			}
 			callback(date, gameURLS);
 		});	
