@@ -166,11 +166,13 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 		request(url, function(error, response, body) {
 			scoreboard = JSON.parse(body);
 			var gameURLS = [];
+			console.log(scoreboard.data.games.game);
 			if (scoreboard.data.games.game) {
-				if (scoreboard.data.games.game.length === 1){
-					gameURLS = ["http://gd2.mlb.com" + scoreboard.data.games.game.game_data_directory + "/boxscore.json" ];
-				} else {
+				if (Array.isArray(scoreboard.data.games.game)){
 					gameURLS = scoreboard.data.games.game.map(function(game){ return "http://gd2.mlb.com" + game.game_data_directory + "/boxscore.json" })
+				} else {
+					// there is only one game in this case
+					gameURLS = ["http://gd2.mlb.com" + scoreboard.data.games.game.game_data_directory + "/boxscore.json" ];
 				}
 			}
 			callback(date, gameURLS);
