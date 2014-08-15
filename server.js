@@ -1,8 +1,10 @@
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
+var cors = require('cors')
 var MongoClient = require('mongodb').MongoClient;
 var app = express();
+app.use(cors())
 var teamCodes = [
 	'oak', 'ana', 'sea', 'tex', 'hou',
 	'det', 'min', 'cws', 'kc', 'cle',
