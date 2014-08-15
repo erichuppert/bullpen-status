@@ -22,6 +22,11 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
     if(!err) {
         console.log("Connected to 'bullpen-status' database");
     }
+	app.all('/', function(req, res, next) {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "X-Requested-With");
+		next();
+	});
 
 	// ping test
 	app.get('/', function(req, res){
