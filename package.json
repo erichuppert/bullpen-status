@@ -11,7 +11,8 @@
     "express": "*",
     "request": "*",
     "cheerio": "*",
-    "mongodb": "*"
+    "mongodb": "*",
+    "cors"   : "*"
   },
   "preferGlobal": true,
   "analyze": true

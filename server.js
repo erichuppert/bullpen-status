@@ -13,6 +13,38 @@ var teamCodes = [
 	'mil', 'stl', 'pit', 'cin', 'chc',
 	'atl', 'mia', 'was', 'nym', 'phi' 
 ];
+var codeToTeamName = {
+	oak: "Oakland Athletics",
+	ana: "Los Angeles Angels",
+	sea: "Seattle Mariners",
+	tex: "Texas Rangers",
+	hou: "Houston Astros",
+	det: "Detroit Tigers",
+	min: "Minnesota Twins",
+	cws: "Chicago White Sox",
+	kc: "Kansas City Royals",
+	cle: "Cleveland Indians",
+	tor: "Toronto Blue Jays",
+	nyy: "New York Yankees",
+	bos: "Boston Red Sox",
+	bal: "Baltimore Orioles",
+	tb: "Tampa Bay Rays",
+	sf: "San Francisco Giants",
+	col: "Colorado Rockies",
+	la: "Los Angeles Dodgers",
+	sd: "San Diego Padres",
+	ari: "Arizona Diamondbacks",
+	mil: "Milwaukee Brewers",
+	stl: "St. Louis Cardinals",
+	pit: "Pittsburgh Pirates",
+	cin: "Cincinatti Reds",
+	chc: "Chicago Cubs",
+	atl: "Atlanta Braves",
+	mia: "Miami Marlins",
+	was: "Washington Nationals",
+	nym: "New York Mets",
+	phi: "Philadelphia Phillies"
+}
 //
 MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpen-status', function(err, db) {
 // MongoClient.connect('mongodb://localhost:27017/bullpen-status', function(err, db) {
@@ -41,7 +73,7 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 		})
 	})
 
-	app.get('/:teamCode', function(req, res) {
+	app.get('/teams/:teamCode', function(req, res) {
 		var teamCode = req.params.teamCode;
 		if (teamCodes.indexOf(teamCode) < 0 ) {
 			res.send(404);
@@ -58,7 +90,7 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 
     function getTeamData(teamCode, callback) {
     	if (teamCodes.indexOf(teamCode) >= 0) {
-			var resData = {team: teamCode, pitchers: [], startDate: isoDate(startDate), endDate: isoDate(new Date())}
+			var resData = {teamCode: teamCode, pitchers: [], startDate: isoDate(startDate), endDate: isoDate(new Date())}
 			db.collection('currentBullpen').findOne({team: teamCode}, function(err, data) {
 				if (!err && data) {
 					var pitchers = data.pitchers;
@@ -69,6 +101,7 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 								var pitcherData = {name: name, id: pid, pitchCounts: pc};
 								resData.pitchers.push(pitcherData);
 								if (resData.pitchers.length == pitchers.length) {
+									resData.teamName = codeToTeamName[teamCode];
 									callback(false, resData)
 								}
 							})
@@ -142,18 +175,21 @@ MongoClient.connect('mongodb://eric:baseball1@ds035358.mongolab.com:35358/bullpe
 		request(url, function(error, response, body) {
 			scoreboard = JSON.parse(body);
 			games = scoreboard.data.games.game.map(function(game) {
-				return {
-					home_team: game.home_team_city,
-					away_team: game.away_team_city,
-					away_team_code: game.away_file_code,
-					home_team_code: game.home_file_code,
-					home_score: game.home_team_runs,
-					away_score: game.away_team_runs,
-					status: game.ind,
-					inning: game.inning,
-					game_time: game.time_date
-				}
-			})
+				var gameTime = new Date(Date.parse(game.time_date) + (4*60*60)).toJSON();
+				var inning_half = game.top_inning=="Y" ? "T" : "B";
+					return {
+						home_team: game.home_team_city,
+						away_team: game.away_team_city,
+						away_team_code: game.away_file_code,
+						home_team_code: game.home_file_code,
+						home_score: game.home_team_runs,
+						away_score: game.away_team_runs,
+						status: game.status,
+						inning: game.inning,
+						inning_half: inning_half,
+						game_time: gameTime
+					}
+				})
 			callback(date, games);
 		});	
 	}
